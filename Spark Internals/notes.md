@@ -1,3 +1,11 @@
 # Notes for Spark Internals
 
-Add your notes here.
+Spark Internals
+RDD
+DAG
+Stages
+Tasks
+Shuffle
+Partitioning
+Catalyst optimizer
+Tungsten engine
