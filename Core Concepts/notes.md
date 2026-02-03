@@ -156,6 +156,182 @@ Distributed computing:
         - Network Involved 
 
 
+SparkSession & SparkContext
+-----------------------------
+    
+What is SparkContext
+---------------------
+SparkContext is a gateway to the spark cluster.
+
+    - Connect your program to cluster manager 
+    - Allocates executotrs 
+    - Taslk to workers 
+    - Mange RDD execution
+
+    Without SparkContext ---> Spark cannot run anything 
+
+
+    Responsibilty             Explanation 
+    Cluster connection        Connect to YARN/standalone/kubernetes 
+
+    Excutor allocation        Request CPU & Memory 
+
+    Task schdulling           Decide which executor runs which task 
+
+    RDD                       Creates,track and execute RDD 
+
+    Fault tolenrece           Recomputes lost partitions 
+
+Problems with this approch:
+
+    - NO SQL support 
+    - No Dataframe API 
+    - No streaming/ML 
+
+Key sparkcontext Objects 
+-----------------------
+    - sc.parallelize()      Create RDD 
+    - sc.textFile()         Read file as RDD
+    - sc.broadcast()        Broadcast Variable 
+    - sc.accumulator()      Shared Counters 
+    - sc.stop()             Stop spark      
+ 
+
+
+
+Spark optimization techniques :
+    1. - Read less data 
+        - Read only required columns (Column Pruning)
+        - Filter Early (Predicate pushdown)
+        - Use correct file formate 
+        - Partitioned data + Filter on partition data 
+
+df= (spark.read.parquet(S3://bucket/sales.parqut")
+    . select ("dt","country","amount") # column pruning
+    . filter("dt>=2026-01-01)) # Filter early 
+
+    2. Avoid Shuffle (Shuffle expensive)
+        - Shuffle happens in :
+            - groupBy,distinct,join,orderby,repartition 
+        - Prefer reduceBykey style/ Pre-aggregation
+        - Use broadcast join when one table is small 
+        - Use partitionBy on write for future queries 
+        - Avoid unnessary repartition() ( it forces shuffle)
+
+    3. Partition tuning (Paralleism)
+        - Too few partitons --> slow (not enough parallism)
+        - too many partition --> (Overhead ( too many small task))
+
+    4. Cache only when it will be reused
+        - Cache helps when- 
+            - Same DF used multiple times (2+actions)
+    5. AQE (Dapative query execution)
+        - AQE can automatically:
+            - Switch tobroadcast join
+            - Coalese shuffle partitions 
+            - Handle skew joins 
 
     
 
+Airflow failure scenario 
+    Common failure senarios ;
+
+    - upstream data not arrived (Most Common)
+        EX: S3 file not present, Hive table partition missing 
+    - Task fails dure transient issues 
+        - Network glitch 
+        - Temporary DB lock 
+        - API timeout 
+
+        FIX: Retries + expontial backoff 
+
+    3. Duplicate loads 
+        - Task partially succeeded, Failed 
+        - Retry loads same data again - Duplicaate 
+
+        FIX: Make pipeline idempotent 
+            - Write to a temp path then rename 
+            - Use overwirite by partition 
+            - Watermark 
+        
+    4. DAG stuck due to resource limits 
+            - too many parallel task 
+            - executor/memory storage 
+
+
+
+
+Hive sql to pyspark step migration 
+
+    Step 1 : Identify SQL pattern 
+        Common Hive SQl pattern :
+            - SELECT + WHERE 
+            - JOIN
+            - GROUP By
+            - Windown fn 
+            - INSERT OVERWRITE PARTITION 
+
+        Step 2: Convert each part into Dataframe API 
+
+            HIVE SQL 
+            --------
+            INSERT OVERWRITE TABLE sales PARTITION (dt)
+            SELECT dt,country.SUM(amount) as total_sum
+            FROM sales 
+            Where dt>= ""
+            GROUP By dt,country
+
+
+            PYSPARK 
+            --------
+            
+            from pyspark.sql.functions import sum as _sum 
+            sales= spark.table("sales")
+            df_summary= (sales .filter(dt >= )
+                         .group by ("dt,"country"))
+
+
+        Step 3: validate result 
+
+            - row count 
+            - distinct keys 
+            - aggregates (sum,count)
+
+Data skew issue
+
+What is skew?
+     When one key has huge records, one partition becomes massive - One executor runs forever while others finish 
+
+     EX:
+
+     - country ="INDIA" ----> has 80% rows 
+     - join/group by on country ---> One partition overloaded 
+
+     FIX 1:
+        - Brodcaste join 
+        - Salting 
+        - AQE skew join handling 
+
+
+
+Write code in filter data overwrite to parquet
+
+    CASE A: Overwrite full folder 
+         df= spark.read.parquet(s3 path)
+         filtered= df.filter("status=ACTIVE")
+
+         filteres.write.mode("overwrite").parquet(s3 path)
+    CASE B : Overwrite only affected data 
+        If your data is partitined by dt, overwrite only those partition 
+
+                 df= spark.read.parquet(s3 path)
+         filtered= df.filter("status=ACTIVE")
+
+         filteres.write.mode("overwrite").formate("parquet").partitionBy("dt").save(s3 path)
+
+   
+    
+
+9:45 - 
+
+5:30 - 
