@@ -329,9 +329,86 @@ Write code in filter data overwrite to parquet
 
          filteres.write.mode("overwrite").formate("parquet").partitionBy("dt").save(s3 path)
 
-   
+  -----------------------------------------------------------------------------------------------------------------------------------
+  RDD Fundamental 
+  ---------------
+
+  1. What is RDD? (Resilient Disrtributed system) 
+
+    - Resilient : Fault tolerent 
+        - If one machine crashes --> Spark can rebuild data using lineage.
+    
+    Example:
+            Excel file lost -> gone forever 
+            RDD lost -> Rebuild from history 
+
+    - Distributed: Data is split across multiple executors 
+
+        - Dataset - 1 million records 
+            - Partition 1-> Executor A
+            - Partition 2-> Executor B 
+            - Partition 3-> Executor C 
+    - Dataset 
+        Colelction of data 
+            - list 
+            - file
+            - databses 
+            - log records 
+2. Why RDD was created?
+    - Before Dataframe existed.
+        - Spark worked using RDD only 
+
+    RDD gives:
+        - Full control 
+        - Functional Programming style 
+        - Low-level transformation 
+
+IMP: Creating RDDs 
+
+1. parallelize() 
+    rdd=sc.paralleize([10,20,30,40])
+
+2. textFile() 
+    rdd=sc.textFile("data.txt")
+
+- Transformation:
+    - Transformation -> Return a New RDD 
+    - Spark builds a DAG 
+    - Does not execute immediatly 
+
+
+
+    1. map(lambda x:x*2) - Applies function to each element (Narrow Transformation)
+    2. flatMap() - 1 input -> multiple output (multiple output for each element)
+        rdd=sc.parallelize(["Hello world","spark rdd"]) -> ["Hello", "world","spark", "rdd"]
+        result=rdd.flatMap(lambda x:x.split(" "))
+    3. filter() - Keep only matching elements 
+        rdd=sc.paralleize([10,20,30,40,50])
+        result=rdd.filter(lambda x:x>20)
+    4. mapPartition()
+    5. mapPartitionsWithIndex() 
+    6. distinct()
+    7. union()
+    8. Intersection()
+    9. subtract()
+    10.cartesian()
+
+
+    11. reduceBykey()
+    12. groupBykey() 
+    13. sortBykey()
+    14. join()
+    15. combineByKey()
+    16. aggregateByKey()
+    17. PartitionBy()
     
 
-9:45 - 
+    18. coalsece()
+    19. repartition()
 
-5:30 - 
+
+
+    
+
+
+
