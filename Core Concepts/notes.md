@@ -376,24 +376,100 @@ IMP: Creating RDDs
     - Spark builds a DAG 
     - Does not execute immediatly 
 
+Narrow Transformation 
+--------------------
+    - Each output partition depends on only input partition.
+    - No shuffle (No network data transfer)
+    - Fast 
 
+    1. map(lambda x:x*2) - Applies function to each element (Narrow Transformation) and return new RDD.
 
-    1. map(lambda x:x*2) - Applies function to each element (Narrow Transformation)
     2. flatMap() - 1 input -> multiple output (multiple output for each element)
+        - flatmap() takes one input and can return multiple output elements and then flatten them into single list.
+            - If does two things 
+                - 1. Applies a function 
+                - 2. Flatten the result 
+
+        rdd=sc.paralleize([1,2,3])
+        result=rdd.flatMap(lambda x:[x,x*10])
+        output: [1,10,2,20,3,30]
+    
+        rdd=sc.parallelize("hello   Spark","Big     Data")
+        result=rdd.map(lambda x:x.split(""))
+        result=rdd.flatMap(lambda x:[w for w in x.split(" ") if w != ""])
+        print(result.collect())
+
+
         rdd=sc.parallelize(["Hello world","spark rdd"]) -> ["Hello", "world","spark", "rdd"]
         result=rdd.flatMap(lambda x:x.split(" "))
     3. filter() - Keep only matching elements 
+        filter() is a transformation used to keep only those elements that satisfy a condition.
+
+        syntax:
+            rdd.filter(lambda x : condition)
+
+            nums=sc.parallelize([10,20,30,40,50])
+            result=nums.filter(lambda x:x%2==0)
+            print(result.collect())
+
+            logs=sc.parallelize([
+                "INFO job started",
+                "ERROR connection failed",
+                "INFO completed"
+            ])
+
+            errors=logs.filter(lambda x:"ERROR" in x)
+            print(errors.collect())
+
+rdd = sc.parallelize([
+    "user1,login,success",
+    "user2,logout,failed",
+    "",
+    "user3,login,sucess",
+    "    ",
+    "use4,login,failed"
+])
+
+1. Remove empty rows 
+2. Split each row into column 
+3. Keep only login events 
+4. Convert usernames to upercase 
+
+OUTPUT: ['USER1','USER3','USER4']
+
+rdd = sc.parallelize([
+    "user1,login,success",
+    "user2,logout,failed"])
+
+
+['user1,login','success','user2,logout','failed']
+
+
+
+
+            
+            nums=sc.parallelize([1,2,3,4,5,6,7,8,9])
+            result=nums.filter(lambda x:x>25)
+            print(result.collect())
+
+
         rdd=sc.paralleize([10,20,30,40,50])
         result=rdd.filter(lambda x:x>20)
     4. mapPartition()
     5. mapPartitionsWithIndex() 
-    6. distinct()
     7. union()
+    
+
+Wide transformation
+--------------------
+    - Output partition may depends on many input partitions 
+    - Shuffle happens ( network transfer + disk spill)
+    - Slower ( Grouping/joining/distinct/repartition)
+
+    6. distinct()
     8. Intersection()
     9. subtract()
     10.cartesian()
-
-
     11. reduceBykey()
     12. groupBykey() 
     13. sortBykey()
