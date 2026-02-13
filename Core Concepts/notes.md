@@ -455,9 +455,46 @@ rdd = sc.parallelize([
 
         rdd=sc.paralleize([10,20,30,40,50])
         result=rdd.filter(lambda x:x>20)
-    4. mapPartition()
+    4. mapPartitions()
+       mapPartition() works on an entire partition at once, not on each elelemnt individually.
+       rdd.mapPartition(function)
+
+       ["A","B","C","D","E","F"]
+
+       partition 0: "A","B","C"
+       partition 1: "D","E","F"
+
+       rdd=sc.parallelize([1,2,3,4,5,6],2)
+       def processs_partition(partition):
+            for x in partition:
+                yield x*10
+        
+        result=rdd.mapPartition(process_partition)
+        print(result.collect())
+
+
+
     5. mapPartitionsWithIndex() 
-    7. union()
+        mapPartitionsWithIndex()  same as mappartitions but spark also gives you partition number(index)
+        rdd=sc.parallelize([1,2,3,4,5,6],2)
+def processs_partition(index,partition):
+    for x in partition:
+        yield (index,x)
+result=rdd.mapPartitionsWithIndex(processs_partition)
+print(result.collect())
+
+
+
+    7. union() : is used to combine two RDDs togather.
+
+    rdd1.union(rdd2)
+
+    Note: Both rdd must have same data type 
+    
+    rdd2=sc.parallelize([10,20,30],2)
+    rdd3=sc.parallelize([100,200,300],2)
+    result=rdd2.union(rdd3)
+`   print(result.collect())
     
 
 Wide transformation
