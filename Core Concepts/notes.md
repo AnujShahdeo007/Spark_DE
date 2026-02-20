@@ -542,9 +542,60 @@ print(rdd.distinct().collect()) # [1,2,3,4]
         ("Banana",50)
        
 
-    12. groupBykey() 
-    13. sortBykey()
-    14. join()
+    12. groupBykey() : it collects all values of the same kry togather.
+
+        result=rdd.groupByKey()
+        output:
+        (key,iterable_values)
+
+
+
+    13. sortBykey():
+        - it is used to sort a pair RDD based on the key.
+        (key,value)
+
+    Syntax:
+
+         rdd.sortByKey(ascending=True) # large to small : ascending=False 
+
+         [("B",10),("A",30),("C",20)]
+
+         result=rdd.sortbykey()
+
+         [("A",30),("B",10),("C",20)]
+
+    14. join():
+    ------------
+
+        Select * from A 
+        join B 
+        On a.key= b.key 
+
+        rdd1.join(rdd2)
+    
+        Both RDD must have structure :
+        (key,value)
+        
+        rdd1=(id,name)
+        rdd2=(id,city)
+
+        result=rdd1.join(rdd2)
+
+        result.collect()
+
+        names=[
+            (1,"Rahul),
+            (2,Priyanka)
+        ]
+
+        marks=[
+            (1,85),
+            (2,78)
+        ]
+
+
+
+
     15. combineByKey()
     16. aggregateByKey()
     17. PartitionBy()
@@ -587,10 +638,61 @@ calculate total sales per city
 
     [1,2,3,4,5,6,7]
 
-6. 
+
+Question GroupBykey()
+
+data=[("A",1),("B",2),("A",3),("B",4)]
+Use groupBykey() to create :
+A->[1,3]
+B->[2,4]
+
+rdd=sc.parallelize(data)
+result=rdd.groupByKey()
+
+2. [
+    ("INFO","Start"),
+    ("ERROR","Crash"),
+    ("INFO","Running"),
+    ("WARN","Slow")
+
+]
+
+Group by log message b level 
 
 
-    
+3. [1,2,3,4,5,6]
+
+    convert:
+
+even->[2,4,6]
+odd-> [1,3,5]
+
+
+4. Longest word per first letter (groupBykey)
+
+    ["spark","python",spark","data","python","spark]
+
+5. Average marks 
+
+[("A",10),("B",30),("A",20)]
+
+
+Questions Sortkeykey
+--------------------
+
+[
+    (20230103,"ERROR"),
+    (20230101,"INFO"),
+    (20230102,"WARN")
+
+
+]
+
+
+2.  ["spark","python",spark","data","python","spark]
+
+        1. Count words using reduce by key 
+        2. Sort result using soryByKey 
 
 
 
