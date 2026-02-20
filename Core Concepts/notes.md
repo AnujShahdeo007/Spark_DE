@@ -490,7 +490,7 @@ print(result.collect())
     rdd1.union(rdd2)
 
     Note: Both rdd must have same data type 
-    
+
     rdd2=sc.parallelize([10,20,30],2)
     rdd3=sc.parallelize([100,200,300],2)
     result=rdd2.union(rdd3)
@@ -503,11 +503,45 @@ Wide transformation
     - Shuffle happens ( network transfer + disk spill)
     - Slower ( Grouping/joining/distinct/repartition)
 
-    6. distinct()
-    8. Intersection()
+    6. distinct() : Removes duplicate elements across the entire RDD.
+        - Wide transfromation. 
+rdd=sc.paralleize([1,2,3,3,3,4])
+print(rdd.distinct().collect()) # [1,2,3,4]
+
+
+    8. Intersection():
+        - Returns common elements prsent in both RDD
+        - When to use:
+            - Common users between 2 datasets 
+            - Common product ID between visted and purchased. 
+            - wide transformation 
+    a=sc.paralleize([1,2,3,4])
+    b=sc.paralleize([3,4,5])
+    print(a.intersection(b).collect()) #[3,4]
+
     9. subtract()
-    10.cartesian()
-    11. reduceBykey()
+        - Returns element in RDD1 that are not in RDD2 ( RDD-RDD2)
+
+            - FInd users who did not convert 
+            -Remove blacklisted ids 
+    a=sc.paralleize([1,2,3,4,4])
+    b=sc.paralleize([4,5])
+      print(a.subract(b).collect()) #[1,2,3]
+
+    10.cartesian() - All Pair ( Every element of RDD1 paired with every elelemt of RDD2)
+
+
+    11. reduceBykey(function) 
+        - REDUCEBYKEY() is used on key-value pair RDD to combine values that have same key using a function 
+        (key,value)
+        (key,value)
+        (key,value)
+        ("Apple",100)
+        ("Banana",200)
+        ("Apple",300)
+        ("Banana",50)
+       
+
     12. groupBykey() 
     13. sortBykey()
     14. join()
@@ -519,6 +553,41 @@ Wide transformation
     18. coalsece()
     19. repartition()
 
+
+Questions :
+
+1. ["spark","python",spark","data","python","spark]
+    - Count frequency of each word using reducebykey()
+
+2. [("A",10), ("B",20), ("A",5), ("B",30), ("C",7)]
+
+Find total value per key.
+
+expected output:
+
+A → 15
+B → 50
+C → 7
+
+3. 
+[("Math",70), ("Math",85), ("Science",90), ("Science",88)]
+Find highest marks per subject using reduceByKey().
+
+4. [
+("Delhi",100),
+("Mumbai",200),
+("Delhi",50),
+("Mumbai",150),
+("Chennai",300)
+]
+\
+calculate total sales per city 
+
+5. Count even and odd no 
+
+    [1,2,3,4,5,6,7]
+
+6. 
 
 
     
