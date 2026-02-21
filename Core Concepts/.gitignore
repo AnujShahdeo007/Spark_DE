@@ -1,0 +1,11 @@
+#python
+.venv/
+__Pycache__/
+*.pyc
+
+#mac 
+.DS_Store
+
+#Jupyter
+.ipnb_checkpoints
+

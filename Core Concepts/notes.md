@@ -566,6 +566,76 @@ print(rdd.distinct().collect()) # [1,2,3,4]
 
     14. join():
     ------------
+        - A join combines two dataset using key/condition 
+        - In spark you join mostly using dataframe (SQL-Style). 
+        - Expensive operation 
+
+        RDD1:(k,V1)
+        RDD2:(k,V2)
+        Result: (k,(V1,V2))
+
+        rdd1.join(rdd2 )
+
+        Internal Working :
+
+            1. Spark reads both RDD partitions 
+            2. Shuffle happens (network transfer)
+            3. Same keys go the same executor 
+            4. Value are paired 
+
+        Note: Join() Always SHuffle 
+
+        RDD1:(1,A),(1,B)
+        RDD2:(1,X),(1,Y)
+
+        (1,(A,X))
+        (1,(A,Y))
+        (1,(B,X))
+        (1,(B,Y))
+
+        # Spark performs caetesian multiplication per key 
+
+        RDD supports multiple joins :
+
+        join Type                    meaning 
+        join()                      Inner Join 
+        leftOuterJoin()             Left Join 
+        rightOuterJoin()            Right join
+        fullOuterJoin()             Full Join 
+        cogroup()                   Group value from both RDDs 
+
+        1. INNER JOIN :
+
+            - Only matching records from both dataset.
+
+        rdd1=sc.parallelize([
+            (1,"Gaurav"),
+            (2,"Ravi"),
+            (2,"Neha")
+        ])
+
+        rdd2=sc.parallelize([
+            (1,"India"),
+            (2,"USA"),
+            (4,"UK")
+        ])
+
+
+        [(2, (<pyspark.resultiterable.ResultIterable object at 0x10a846ad0>, <pyspark.resultiterable.ResultIterable object at 0x10a844f90>)), (4, (<pyspark.resultiterable.ResultIterable object at 0x10a748390>, <pyspark.resultiterable.ResultIterable object at 0x10a847210>)), (1, (<pyspark.resultiterable.ResultIterable object at 0x10a74b110>, <pyspark.resultiterable.ResultIterable object at 0x10a847a90>)), (3, (<pyspark.resultiterable.ResultIterable object at 0x10a85ba90>, <pyspark.resultiterable.ResultIterable object at 0x10a85af50>))]
+                                                                                
+
+Anto join :
+
+Return records from Let dataset that do not exists in Right dataset 
+
+Left ANti join = Left-Intersection 
+
+
+
+
+
+
+
 
         Select * from A 
         join B 
@@ -592,6 +662,8 @@ print(rdd.distinct().collect()) # [1,2,3,4]
             (1,85),
             (2,78)
         ]
+
+
 
 
 
@@ -695,4 +767,43 @@ Questions Sortkeykey
         2. Sort result using soryByKey 
 
 
+
+Questions :
+
+User profile + country 
+
+rdd_users = (user_id,name)
+rdd_contery =(user_id,country)
+
+# Return users with their country name 
+ # (user_id,(name,country))
+
+2. Find the users without country (Anti join)
+    # return users that don't exist in country RDD 
+
+3. Combine orders with payment info 
+
+    orders_rdd=(ordr_id,amount)
+    payment_rdd=(order_id,payment ststus )
+
+    Return only sucessfull payments 
+
+    # join , Filter 
+
+4. Duplication key Explosion 
+
+    rdd1=
+    (1,A)
+    (1,B)
+    rdd2 = 
+    (1,X)
+    (1,Y)
+# Why row count increase 
+
+5. source_rdd=(id,value )
+    target_rdd=(id,value)
+
+# Missing in source 
+# Missing in target 
+# Mismatched record 
 
