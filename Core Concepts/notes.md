@@ -624,18 +624,11 @@ print(rdd.distinct().collect()) # [1,2,3,4]
         [(2, (<pyspark.resultiterable.ResultIterable object at 0x10a846ad0>, <pyspark.resultiterable.ResultIterable object at 0x10a844f90>)), (4, (<pyspark.resultiterable.ResultIterable object at 0x10a748390>, <pyspark.resultiterable.ResultIterable object at 0x10a847210>)), (1, (<pyspark.resultiterable.ResultIterable object at 0x10a74b110>, <pyspark.resultiterable.ResultIterable object at 0x10a847a90>)), (3, (<pyspark.resultiterable.ResultIterable object at 0x10a85ba90>, <pyspark.resultiterable.ResultIterable object at 0x10a85af50>))]
                                                                                 
 
-Anto join :
+Anti join :
 
 Return records from Let dataset that do not exists in Right dataset 
 
 Left ANti join = Left-Intersection 
-
-
-
-
-
-
-
 
         Select * from A 
         join B 
@@ -664,11 +657,8 @@ Left ANti join = Left-Intersection
         ]
 
 
-
-
-
-
     15. combineByKey()
+        - 
     16. aggregateByKey()
     17. PartitionBy()
     
@@ -676,6 +666,11 @@ Left ANti join = Left-Intersection
     18. coalsece()
     19. repartition()
 
+NOTE:
+
+    reduceBykey(function) easist aggreagtion per key when you can combine two values of the same type into one value of the same type.
+
+    CombineByKey(createCombiner,mergevalue,mergecombiner) most flexible aggregation per key when you need a diffrenent ccumulator type. 
 
 Questions :
 
@@ -749,6 +744,7 @@ odd-> [1,3,5]
 [("A",10),("B",30),("A",20)]
 
 
+
 Questions Sortkeykey
 --------------------
 
@@ -806,4 +802,21 @@ rdd_contery =(user_id,country)
 # Missing in source 
 # Missing in target 
 # Mismatched record 
+
+--------------------------------------------------------------------------------------------------------------
+
+stages 
+tasks 
+shuffle 
+Partitioning 
+
+stages :
+    - A stage is a group of operation that spark can execute without shuffle.
+
+    - Spark divides your job into stages based on wide transformation.
+
+    narrow transformation - same stage 
+    wide transformation - new stage 
+
+    
 
