@@ -1,0 +1,393 @@
+Basics
+-------
+SparkSession
+
+    - Sparksession is the entry point to use Spark (Dataframe,SQl,hive,Straming)
+
+    Creating SparkSession()
+
+    from pyspek.sql import SparkSession
+    spark=SparkSession.builder\
+    .appname("Myapp")\
+    .getOrcreate()
+
+# SparkSession.builder : It is a builder object use to configure and create SparkSession. It allows setting application,name,master node, spark configuration before intilizing the session. The actual sparksession is created when getorcreate is called.
+
+
+
+     spark=SparkSession.builder\ # Is a builder object used to configure and create SparkSession
+    .appname("Myapp")\ # Application name in Spark UI
+    .master("local[*]")\ # .master("k8s://) # .master("yarn")  #Where spark runs 
+    .config("") # set spark properties 
+    .config("")
+    .getOrcreate() # Create new session or return existing one 
+
+    If you want: 
+        - read data 
+        - create dataframe 
+        - Run sql 
+        - Config spark 
+        - Access SparkContext 
+
+
+Configurations:
+
+    - Spark configuration are setting that control how spark runs,uses memory,CPU,shuffle,Parallism etc 
+
+Why configuration Matters :
+
+    - OOM (Out of memory)
+    - slow job
+    - Too many small files 
+    - Log shuffle time 
+    - Excutor dying 
+    - Skew problem 
+
+    Types of spark configuration:
+
+    Application configs         appName,master
+
+    resource config             memory,cores 
+
+    Execution config            shuffle,parallism 
+
+
+
+
+Module 1 : Introduction to Dataframe:
+
+    A dataframe is a distributed collection of data organized into named columns. 
+
+    It is :
+        - Distributed 
+        - Immutable 
+        - Schema based 
+        - Optimized by catalyst engine 
+
+    Why dataframe over RDD?
+
+    RDD                             Dataframe 
+
+    Low-level                       High-level 
+    No schema                       Has Schema
+    Manual Optimization             Automatic optimization 
+    Slower                          Faster 
+
+
+    Creating Dataframe :
+
+    7 ways :
+
+        - From python list(tuple)
+
+            Syntax:
+
+            data=[("Gaurav",25),("Rahul",30)]
+            df=spark.createDataFrame(data,["Name",age"])
+            df.show()
+
+        # spark.createDataFrame() is used to create a spark Dataframe from 
+            - Python List 
+            - RDD
+            - Pandas Dataframe 
+            - List of dictionries 
+            - Row objects 
+
+        Syntax :
+
+            spark.createDataFrame(data,schema=None)
+
+            Data= Input data 
+            schema = optinal schema ( list or Structtype )
+
+        - From List of dictionries 
+        - From RDD 
+        - From CSV file 
+        - From json file 
+        - From parquet file 
+        - From pandas Dataframe 
+
+-----------------------------------------------------------------------------------------------------------------------
+
+Converting structured or semi structured data into distributed tabular formate inside Spark. 
+
+Dataframe = Distributed + Schema + immutable 
+
+Ways To create Dataframe :
+
+1. Using Spark.createDataFrame()
+
+    -from list 
+    -from dict 
+    -from RDD 
+    -from pandas 
+
+2. Using Spark.read()
+
+    - CSV 
+    - JSON 
+    - parquet 
+    - ORC (Optimized ROW Columnuner)
+    - Avro 
+
+1. Spark.createDataFrame()
+
+    syntax:
+        - spark.createDataFarme(data,schema=None)
+
+        data- input data 
+        schema - optinal structure 
+
+    Method-1 : From list of tuple 
+
+    data=[("Gaurav",30),("Rahul",45),("neha",56)]
+    columns=["Name","Age"]
+    df_users=spark.createDataFrame(data,columns)
+    # df_users=spark.createDataFrame(data,["Name","Age"])
+
+
+    Internal working :
+
+        - Python list -> converting into RDD 
+        - schema applied 
+        - Default partition assigned 
+        - Logical plan created 
+        - Dataframe object retured 
+
+    Method 2 : With Explicit Schema (Production)
+
+        - Because you do not let spark guess data type ( inferSchema) which can :
+            - changes between files/days (string today,int tommrrow)
+            - make pipleine unstable 
+            - couse silent wrong type (00123 become 123)
+            - slow down read (Spark scan data to infer)
+
+
+            Example-1:
+
+                from pyspark.sql.types import StructType,StructField,StringType,IntegerType
+                # pyspark.sql.types - Spark data type definition module 
+                # StructType - a full schema object (table structure)
+                # StructField - One column definition 
+            data=[
+                    ("101","gaurav",30),
+                    ("102","Rahul",40)
+                ]
+
+            schema= StructType([
+                StructField("id",StringType(),True),
+                StructField("Name",StringType(),False),
+                StructField("Age",IntegerType(),True),
+
+            ])
+
+            df=spark.createDataFrame(data,schema)
+
+                # pyspark.sql.types - Spark data type definition module 
+                # StructType - a full schema object (table structure)
+                # StructField - One column definition 
+                Stringtype,IntergerType = Spark SQL column data type 
+
+            data= [] - Local python data 
+
+            schema : [StructType (["id","name","Age"])]
+
+            StructFeild : Defines one column 
+            id = column name 
+            Stringtype() - column type 
+            True- Nullable 
+                - True means this column contains null 
+                - false means spark expects it to be always not null 
+
+    Method 3: From list of Dictionaries 
+
+        data= [
+            {"Name":"gaurav","age":30},
+            {"Name":"rahul","age":40}
+        ]
+
+        df=spark.createdataframe(data)
+
+
+        Notes :
+            - Keys becomes column name 
+            - Types inferred automatically 
+
+            ** If one dictionary missing key -> Null Inserted 
+
+
+    Method 4 : From RDD 
+
+        step 1 : Create RDD 
+
+            rdd= spark.sparkContext.parallelize([
+                ("gaurav",30)
+                ("Rahul",40)
+            ])
+
+        step 2 : 
+
+            df=spark.creatdataframe(rdd,["Name","Age"])
+
+
+        When Used- 
+
+            - After Rdd transfromation 
+            - Low level processing 
+
+
+    Method 5 : From Pandas Dataframe 
+
+       
+
+        import pandas as pd 
+        df=pd.DataFrame({
+        "Name":["Gaurav","Rahul"],
+        "Age":[30,40]
+    })
+
+
+    df_pand=spark.createDataFrame(pdf)
+
+
+    Note: Warning 
+
+        - Pandas Dataframe:
+            - Exists in driver memory 
+            - Not Distributed 
+            - Avoid for big data 
+
+    Method 6 : Using spark.read ( Most Imp Real projects )
+
+        core syntax:
+
+            df=spark.read.format("csv").option("header","true").load("/path/file.csv")
+
+            Options:
+
+                1. mode 
+
+                    Mode                        Meaning                                         When to use 
+                    PERMISSIVE(default)         Put corrupt record in special column            production pipeline 
+                    DROPMALFORMED               drop bad records                                non-critical data 
+                    FAILFAST                    stop immediately                                Strict financial data 
+
+
+
+                    Why?
+
+                        - In realtime ETL, some rows are broken. you must need to decide 
+                            - ignore?
+                            - Store Seprataly 
+                            - Fail Job 
+
+                2. columnNameOfCorruptRecord
+                    
+                    .option ("columnNameOfCorruptRecord","_bad_records")
+
+                    Used with PERMISSIVE mode.
+
+                        Spark will create a column containing the bad row 
+
+                        why?
+                            - for auditing and logging in production.
+
+
+                3. schema 
+
+                    .schema(my_schema)
+
+                    Not an option but extermaly important 
+
+                    Why?
+
+                        - Avoid inferschema (slow)
+                        - Avoid wrong datatype 
+                        - Required in production 
+
+                    
+                CSV :
+
+                    1. header
+
+                        .option("header","true")
+
+                        if first row contains column names 
+
+                        Why ?
+
+                            - Otherwise Spark creates _c0,_c1,_c2
+
+
+                    2. inferSchema
+                            .option("inferSchema","true")
+                        - Spark scans file and guesses types 
+
+                    3. sep (Seprator)
+
+                        .option("sep","|")
+
+                         - Default = , 
+
+                         Why?
+
+                            - Many files use:
+
+                                - |
+                                - \t 
+                                - ; 
+                    4. quote
+
+                    5. escape
+
+                    6. multiLine
+
+                    7. nullvalue
+
+                    8. encoding 
+
+                    9.dataFormate 
+
+                    10.maxColumns
+
+
+            JSON:
+
+                    1. multiLine
+                    
+                    2. primitiveAsString
+
+                    3. allowComments 
+
+                    4. allowUnquotedFieldnames
+
+                    5. fropFieldifALLNull 
+
+
+            Parquet 
+
+                    1. mergeSchema
+
+                    2. pathGlobFilter 
+
+                    3. recursiveFileLoopup
+
+                
+
+              
+
+
+        # CSV 
+
+        # JSON
+
+        # Parquet 
+
+        
+
+
+
+
+
+
+
