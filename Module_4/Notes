@@ -337,18 +337,49 @@ Ways To create Dataframe :
                                 - \t 
                                 - ; 
                     4. quote
+                        .option("quote",'"')
+                        Default=" "
+
+                        ex: 1,"New York,USA"
 
                     5. escape
+                        .option("escape","\\")
+                        Used when quotes apper inside quoted string 
+
+                        "He said \"Hello\""
 
                     6. multiLine
+                        .optin("multiline","true")
+                         If feilds spans multiple lines 
+
+                         Address 
+                         Description 
+                         Comments 
+
+
 
                     7. nullvalue
 
+                        .option("nullValue","NULL")
+
+                        Traets "NULL" as actual NULL 
+
+
+
                     8. encoding 
 
+                        .option("encoding","UTF-8")
+
+
+
                     9.dataFormate 
+                        .option("dateFormat","yyyy-MM-dd")
+                        .option("timestampFormat","yyyy-MM-dd HH:mm:ss)
+
 
                     10.maxColumns
+
+                        - Protect against corrupted row with too many columns 
 
 
             JSON:
