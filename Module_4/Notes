@@ -435,7 +435,168 @@ df.explain()
 
 df.rdd.todebugString() # RDD lineage view 
 
+Transformation :
 
+Projection :
+
+    - select() 
+        - select() is used to select specific coilumn from dataframe.
+
+            df.select("column1","column2)
+
+    - selectExpr()
+        SelectExpr() allows you to write SQl expression inside select.
+            - df.selectExpr("column","expression As alias)
+
+            df_emp.selectExpr("name",CASE WHEN salary > 60000 THEN "High" ELSE "Medium" as salary_grade").show() 
+
+
+    - withColumn() 
+        - Add or replace a column 
+            df.withColumn("new_column",expression)
+
+
+            df.withColumn("tax",expression)
+              .withColumn("test",expression)
+
+    - withColumns() # spark3.4+ 
+
+        - Add multiple column in one call
+
+            df.withColumns(
+            {
+            "col1":Expression2,
+            "col2":Expression2
+            })
+
+
+    - withColumnRenamed()
+        Rename one Column 
+
+        - df.withColumnRenamed("old_name","new_column")
+
+
+
+    - toDF() 
+
+        Rename all columns at once
+
+            df.toDF("col1","col2","col3","col4")
+
+            # Number of column name must match exactly 
+
+
+    - drop() 
+
+        - Remove column(S) from dataframe.
+
+        df.drop("column name")
+
+    - alias() 
+
+        - Temporarily rename column or Dataframe (mainly used in joins)
+
+        emp_df.select(col("salary").alias("emp_sal"))
+
+        emp=emp_df.alias("e")
+
+
+
+    functions 
+
+    select()                        choose columns
+
+    selectExpr()                    SQl style select
+
+    withColumn()                    Add/replace column 
+
+    withColumns()                   add multiple cols 
+
+    withColumnRenamed()             rename one column 
+
+    toDf()                          rename all columns 
+
+    drop()                          remove column
+
+    alias                           tempporary rename 
+
+
+
+Project: 1   HR payroll project & Department COST report 
+
+From employee + department datasets, crete a final reporting dataframe that contains:
+
+    - Standatdized column names
+    - cleaned/drived metrics (bonus,tax,net_salary)
+    - slaary band (high,medium and low)
+    - Join with department name
+    - A final report with only reqired columns 
+
+    emp_data=[
+    (1,"Gaurav",30,5000,101),
+    (),
+    ()
+    ]
+
+    emp_col= ["emp_id","name","age","salary",dept_id"]
+
+    dept_data=[
+    (101,"HR")
+    ()
+    ()
+    ]
+
+    dept_col=["dept_id",dept_name"]
+
+    Q1. toDF - Standadize all column names (wharehouse friendly) 
+
+            emp_id,emp_name,emp_age.............
+
+
+    Q2. withColumnRenamed() - rename one specific column 
+
+        salary --> base_salary
+
+    Q3. withColumn() - Add 1 drived column 
+
+        bonus---> 10% of salary 
+
+    Q4. withColumns() - Add multiple colums in one slot 
+
+        tax and net_salary with expression 
+
+        tax--> 0.2 of salary 
+        net salary= base_Sal+bonus-tax
+
+    Q5. selectExpr() create SQl style calculated column 
+
+        salary_band using CASE 
+
+    Q6. alais() - Use alias in join 
+
+        e= emp_band.alias("e")
+        d=dept_df.alaias("d")
+
+        joined= e.join(d,col......)
+
+
+    Q7. drop() - Remove duplicate join column 
+
+        - After join you'll have two dept_id columns if you select both 
+
+            d. dept_id 
+
+
+    Q8. select() - FInal projection for reporting 
+
+    
+    Q9. Show - FInal output 
+
+
+
+
+    
+    
 
 
 
