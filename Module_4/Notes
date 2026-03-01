@@ -415,7 +415,25 @@ Ways To create Dataframe :
         # Parquet 
 
         
+######################################################################################################################
+                                    Transformation 
 
+What is transformation?
+
+    - Does not execute immediatlely 
+    - Return new dataframe 
+    - Is lazily evalutated
+    - Builds the DAG 
+
+
+Narrow Tranformation 
+
+Wide Transformation 
+
+
+df.explain() 
+
+df.rdd.todebugString() # RDD lineage view 
 
 
 
