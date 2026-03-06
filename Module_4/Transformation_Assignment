@@ -1,0 +1,277 @@
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, lit, expr, when, coalesce
+from pyspark.sql.functions import nvl
+
+spark = SparkSession.builder.appName("ColumnExpressionsPractice").getOrCreate()
+
+data = [
+    (1, "Gaurav", 30, 50000, "HR", "Pune"),
+    (2, "Priya", 28, None, "IT", "Mumbai"),
+    (3, "Rahul", 35, 70000, "HR", None),
+    (4, "Sneha", None, 80000, "Finance", "Delhi"),
+    (5, "Amit", 40, 90000, "IT", "Pune"),
+    (6, "Sonal", 25, 45000, "Admin", "Nagpur"),
+    (7, "Arjun", 32, None, "IT", "Bangalore"),
+    (8, "Simran", 29, 62000, "Finance", "Mumbai")
+]
+
+columns = ["emp_id", "name", "age", "salary", "dept", "city"]
+
+df = spark.createDataFrame(data, columns)
+
+df.show()
+df.printSchema()
+
+
+
+
+Questions :
+
+
+1. Select only these columns from DataFrame:
+	•	emp_id
+	•	name
+	•	salary
+
+2. Create a new DataFrame showing:
+	•	name
+	•	dept
+	•	city
+
+using col() only.
+
+
+
+3. Add a new column called country with value "India".
+
+4. Add a new column called company with value "TCS".
+
+5. Create a new column bonus_fixed with constant value 5000.
+
+6. Create a new column salary_after_hike as:
+    - salary * 1.10
+
+    using expr().
+
+
+7. Create a column emp_label like:
+
+    Gaurav - HR
+    Priya - IT
+
+using expr().
+
+8. Create a column salary_grade using SQL CASE inside expr():
+	•	salary >= 80000 → High
+	•	salary >= 60000 → Medium
+	•	else → Low
+
+9. Cast salary column to "double".
+
+10. Cast age column to "string"
+
+11. Create a new column salary_str by converting salary into string type.
+
+12. Create a column salary_band:
+	•	salary >= 80000 → High
+	•	salary >= 60000 → Medium
+	•	otherwise → Low
+
+13. Create a column age_group:
+	•	age < 30 → Young
+	•	age between 30 and 35 → Mid
+	•	otherwise → Senior
+
+14
+
+Create a column dept_type:
+	•	IT → Technical
+	•	HR → People
+	•	Finance → Accounts
+	•	otherwise → Support
+
+15
+
+Create a column city_status:
+	•	city is null → Missing City
+	•	otherwise → Available
+
+⸻
+
+
+16
+
+Replace null salary with 0 and create a new column salary_clean.
+
+17
+
+Create a new column city_clean where null city becomes "Unknown".
+
+18
+
+Create a new column age_clean where null age becomes -1.
+
+⸻
+
+
+
+19
+
+Using SQL expression, replace null salary with 10000.
+
+20
+
+Create a column city_nvl where null city becomes "Not Provided".
+
+df.select(expr("nvl(city, 'Not Provided') as city_nvl"))
+
+
+21
+
+Filter employees whose salary is null.
+
+22
+
+Filter employees whose city is null.
+
+23
+
+Create a column salary_status:
+	•	null → Missing
+	•	not null → Present
+
+
+24
+
+Show only employees whose age is not null.
+
+25
+
+Show only employees whose city is not null.
+
+26
+
+Filter employees whose salary is available.
+
+27
+
+Show employees whose salary is between 50000 and 80000.
+
+28
+
+Show employees whose age is between 28 and 35.
+
+29
+
+Create a column mid_salary_flag:
+	•	Yes if salary between 50000 and 80000
+	•	No otherwise
+
+
+30
+
+Filter employees from departments:
+	•	HR
+	•	IT
+
+31
+
+Filter employees whose city is either:
+	•	Pune
+	•	Mumbai
+
+32
+
+Create a column target_dept_flag:
+	•	Yes if dept in HR, IT, Finance
+	•	No otherwise
+
+
+33
+
+Find employees whose names start with A.
+
+34
+
+Find employees whose city ends with i.
+
+35
+
+Find employees whose dept contains in.
+
+
+39
+
+Create a new DataFrame with columns:
+	•	emp_id
+	•	name
+	•	salary
+	•	bonus = salary * 0.1
+	•	tax = salary * 0.2
+
+40
+
+Create a new DataFrame with:
+	•	name
+	•	dept
+	•	salary_clean
+	•	salary_band
+
+Where:
+	•	salary_clean replaces null with 0
+	•	salary_band uses when/otherwise
+
+41
+
+Filter employees:
+	•	from IT or HR
+	•	salary not null
+	•	age between 25 and 35
+
+42
+
+Find employees:
+	•	whose name starts with A or S
+	•	and city is not null
+
+43
+
+Create a new column remarks:
+	•	salary is null → No Salary
+	•	salary < 50000 → Low Salary
+	•	salary between 50000 and 80000 → Average Salary
+	•	salary > 80000 → High Salary
+
+
+
+44: Build Final Employee Report
+
+Create a final DataFrame with these columns:
+	•	emp_id
+	•	name
+	•	dept
+	•	city
+	•	salary_clean
+	•	bonus
+	•	tax
+	•	net_salary
+	•	salary_band
+	•	location_status
+	•	dept_flag
+
+Rules
+	•	salary_clean = replace null salary with 0
+	•	bonus = salary_clean * 0.10
+	•	tax = salary_clean * 0.20
+	•	net_salary = salary_clean + bonus - tax
+	•	salary_band
+	•	= 80000 → High
+	•	= 60000 → Medium
+	•	else → Low
+	•	location_status
+	•	city is null → Missing
+	•	otherwise → Available
+	•	dept_flag
+	•	dept in HR, IT, Finance → Main Dept
+	•	otherwise → Other Dept
+

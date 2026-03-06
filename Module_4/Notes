@@ -594,10 +594,204 @@ From employee + department datasets, crete a final reporting dataframe that cont
 
 
 
+    Column Expression in Pyspark 
+    ----------------------------
+
+    Column expression are operations applied to dataframe columns 
+
+    They allow us:
+
+        - Transform data 
+        - Create new column 
+        - Apply condition 
+        - Handle null value 
+        - Perform filtering 
+        - Perform calculation 
+
+
+These expression are used inside:
+
+    - select()
+    - withCOlumn()
+    - filter()
+    - where()
+
+
+# df.select(col("salary")*0.2) 
+# col("salary")*0.2 -- Expression
+
+col() :
+
+    Used to refrence a column in Dataframe instead of writing column names as strings we use col.
+
+
+# df.select(col("salary")*0.2) 
+# col("salary")*0.2 -- Expression
+
+syntax:
+    col("column_name")
+
+Why use col() :
+    - Because it allows column operations 
+
+lit():
+    Creates a literals (constant) column.
+
+    Used when adding contant values.
+
+    syntax:
+
+        lit(value)
+
+    df.withColumn("country",lit("India")).show()
+
+
+expr() :
+
+    Allow write SQl expression inside Pyspark 
+
+    expr("SQL expression")
+
+
+cast():
+
+    - Used to change column data type 
+
+    col("column").cast("datatype")
+
+    df.withColumn("salary_double",col("salary").cast("double"))
+
+when() :
+
+    Implements conditional Logic (Like SQl CASE)
+
+    syntax:
+
+        when (condition,value)
+
+
+otherwise() : 
+
+    Works with when() to define else condition 
+
+
+coalesce() :
+
+    Return the first non null value among columns 
+
+    - Used to handle Null Values 
+
+    syntax:
+
+        coalesce(column1,column2,......)
+
+    df.withColumn("salary_fixed",coalaece(col("salary"),lit(0))).show()
+
+    If salary Null --> repalce 0 
+
+
+nul () - 
+
+    - Same as SQL NVL() 
+
+    Replace NULL with Another Value 
+
+        - If the first value is NULL it returns second value 
+        - If the first value is Not Null it returns the first value itself 
 
     
+        nvl(column,replacement_value)
     
 
 
 
+                            NVL                                     COLASECE()
 
+Number of arguments         2                                       Multiple 
+
+Purpose                 Replcae NULL with Value                     Return first on -null value 
+
+SQL                     Orcale style                                Standared SQL 
+
+Spark                   Limited                                     preferred
+
+
+
+isNULL 
+
+    - Checks if column value is NULL 
+
+    df.filter(col("salary").isNull()).show() 
+
+
+isNotNull() 
+
+    - Checks if column value is Not NULL 
+
+    df.filter(col("salary").isNotNull()).show() 
+
+
+between() 
+
+    - Checks if value lies between two numbers 
+
+    " salary between 50000 and 80000"
+
+    df.filter(col("salary").between(50000,80000)).show() 
+
+
+isin()      
+
+    Checks if column value matches value from a list 
+
+    "Where dept in ('HR','IT')"
+
+    df.filter(col("dept").isin("HR,IT")).show() 
+
+
+like() 
+    
+    Pattern matching using %
+
+    df.filter(col("name").like("A%")).show()
+
+
+rlike() 
+
+    Pattern matching using regular expression 
+
+    - Need to discuss Regular Expression in Python 
+
+
+
+
+Raw Level Expression 
+-------------------
+
+filter() 
+
+where() 
+
+limit() 
+
+sample() 
+
+distinct() -- Wide 
+
+dropDuplicates() - Wide 
+
+
+
+Sorting Transformation 
+----------------------
+
+orderBy()  - Wide 
+
+sort() - Wide 
+
+sortWithinPartitions() -Narrow 
+
+
+
+Agrregation Transdformation 
+----------------------------
